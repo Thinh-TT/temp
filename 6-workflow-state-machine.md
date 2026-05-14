@@ -98,6 +98,8 @@ Job đã xóa mềm (IsDeleted=1)
                           Status = Hidden (an toàn, không tự động public)
 ```
 
+> **Chốt quy tắc restore**: Sau khi restore, entity luôn được gán `Status = Hidden`, bất kể trạng thái trước khi bị xóa mềm là gì. Đây là quy tắc safety-first của state machine, tránh trường hợp content từng bị xóa vô tình được public trở lại. DB rules mục 10.2 trong `4-erd-and-db-rules.md` cần được đọc cùng với quy tắc này: "vẫn phải tuân theo Status hiện tại" nghĩa là sau restore entity sẽ bắt đầu từ `Hidden` và admin có thể chuyển tiếp sang `Approved`/`Published` nếu cần.
+
 ### 3.7 Audit log đề xuất cho Job
 
 | Cột          | Mô tả                          |
@@ -285,6 +287,8 @@ Post đã xóa mềm (IsDeleted=1)
     └── Admin restore ──► IsDeleted = 0
                           Status = Hidden (an toàn)
 ```
+
+> **Quy tắc restore cho Post**: Giống Job — restore luôn ép `Status = Hidden`. Lý do và cách đọc chung: xem chú thích tại mục 3.6.
 
 ### 5.8 Audit log đề xuất cho Post
 

@@ -33,9 +33,9 @@
 │   │   ├── /employer/jobs/create (Job Form - create)
 │   │   ├── /employer/jobs/{jobId}/edit (Job Form - edit)
 │   │   └── /employer/jobs/{jobId}/applications (Employer Applications)
-│   └── /employer/posts/create (Post Editor - create)
-├── /users/{userId} (User Profile - public)
+├── /posts/create (Post Editor - create)
 ├── /posts/{postId}/edit (Post Editor - edit)
+├── /users/{userId} (User Profile - public)
 └── /admin/
     ├── /admin/dashboard (Admin Dashboard)
     ├── /admin/jobs (Admin Job Moderation)
@@ -52,15 +52,15 @@
 | SCR-003   | Job Detail            | `/jobs/{slug}`                                         | All                 | Must   | Chi tiết job + apply button (candidate) + save button |
 | SCR-004   | Login                 | `/auth/login`                                          | Guest               | Must   | Form đăng nhập                                        |
 | SCR-005   | Register              | `/auth/register`                                       | Guest               | Must   | Form đăng ký, chọn role Candidate/Employer            |
-| SCR-006   | Candidate Profile     | `/candidate/profile`                                   | Candidate           | Must   | Form chỉnh sửa hồ sơ cá nhân                          |
-| SCR-007   | Employer Profile      | `/employer/profile`                                    | Employer            | Must   | Form chỉnh sửa hồ sơ công ty                          |
+| SCR-006   | Candidate Profile     | `/candidate/profile`                                   | Candidate           | Must   | Form chỉnh sửa hồ sơ cá nhân; avatar upload (FR-020) là Should |
+| SCR-007   | Employer Profile      | `/employer/profile`                                    | Employer            | Must   | Form chỉnh sửa hồ sơ công ty; logo upload (FR-020) là Should |
 | SCR-008   | Employer Job List     | `/employer/jobs`                                       | Employer            | Must   | Danh sách job của employer + filter theo status       |
-| SCR-009   | Job Form              | `/employer/jobs/create`, `/employer/jobs/{jobId}/edit` | Employer            | Must   | Form tạo/sửa job với rich text editor                 |
+| SCR-009   | Job Form              | `/employer/jobs/create`, `/employer/jobs/{jobId}/edit` | Employer            | Must   | Form tạo/sửa job; MVP: textarea thường; Sau MVP: rich text editor (FR-016) |
 | SCR-010   | Saved Jobs            | `/candidate/saved-jobs`                                | Candidate           | Must   | Danh sách job đã lưu                                  |
 | SCR-011   | Employer Applications | `/employer/jobs/{jobId}/applications`                  | Employer            | Must   | Danh sách ứng viên + cập nhật trạng thái              |
 | SCR-012   | Community Feed        | `/posts`                                               | All                 | Must   | Feed bài viết + sort newest/trending                  |
 | SCR-013   | Post Detail           | `/posts/{slug}`                                        | All                 | Must   | Chi tiết bài viết + comment + upvote + bookmark       |
-| SCR-014   | Post Editor           | `/posts/create`, `/posts/{postId}/edit`                | Candidate, Employer | Must   | Form tạo/sửa bài viết                                 |
+| SCR-014   | Post Editor           | `/posts/create`, `/posts/{postId}/edit`                | Candidate, Employer | Must   | Form tạo/sửa bài viết; thumbnail upload (FR-020) là Should |
 | SCR-015   | User Profile          | `/users/{userId}`                                      | All                 | Should | Hồ sơ công khai + bài viết đã đăng                    |
 | SCR-016   | Admin Job Moderation  | `/admin/jobs`                                          | Admin               | Must   | Danh sách job chờ duyệt + approve/hide/delete         |
 | SCR-017   | Admin Dashboard       | `/admin/dashboard`                                     | Admin               | Must   | Tổng quan + biểu đồ                                   |
@@ -94,7 +94,7 @@ Login → Home / Job List
  │     └──► Post Detail (SCR-013)
  │           ├──► Comment
  │           ├──► Reply (Sau MVP)
- │           ├──► Upvote/Downvote
+ │           ├──► Upvote / Bỏ upvote
  │           └──► Bookmark
  ├──► Post Editor (SCR-014) → tạo bài mới từ navbar
  │     └──► Post Editor (SCR-014) → sửa bài từ Post Detail
@@ -215,7 +215,7 @@ Login → Admin Dashboard (SCR-017)
 - **Mục tiêu**: Quản lý hồ sơ ứng viên.
 - **Thành phần chính**:
   - `[C]` Navbar (user menu)
-  - Avatar upload (click để chọn ảnh, preview)
+  - Avatar: MVP dùng text input URL; Sau MVP dùng upload + preview (FR-020)
   - Form fields: FullName, DateOfBirth (datepicker), Gender (dropdown), Address, Bio (textarea), ExperienceYears (number)
   - Skills selector: multi-select dropdown hoặc tag input, chọn từ danh sách `Skills` có sẵn
   - CV upload: input file (chỉ nhận PDF), hiển thị tên file hiện tại, nút "Tải CV mới"
@@ -229,7 +229,7 @@ Login → Admin Dashboard (SCR-017)
 - **Mục tiêu**: Quản lý hồ sơ doanh nghiệp.
 - **Thành phần chính**:
   - `[C]` Navbar (user menu)
-  - Logo upload (click để chọn ảnh, preview)
+  - Logo: MVP dùng text input URL; Sau MVP dùng upload + preview (FR-020)
   - Form fields: CompanyName (required), Description (textarea), Website (url), Address, CompanySize (dropdown: 1-10, 11-50, 51-200, 201-500, 500+)
   - "Lưu thay đổi" button
 - **Error state**: Toast "Vui lòng nhập tên công ty" nếu thiếu CompanyName.
@@ -259,9 +259,9 @@ Login → Admin Dashboard (SCR-017)
   - Form fields:
     - Title (text input, required)
     - JobCategory (dropdown, required)
-    - Description (rich text editor - Quill.js, required)
-    - Requirement (rich text editor - Quill.js, required)
-    - Benefits (rich text editor - Quill.js)
+    - Description (MVP: textarea; Sau MVP: rich text editor Quill.js, required)
+    - Requirement (MVP: textarea; Sau MVP: rich text editor Quill.js, required)
+    - Benefits (MVP: textarea; Sau MVP: rich text editor Quill.js)
     - SalaryMin, SalaryMax (number inputs)
     - Location (text input)
     - ExperienceLevel (dropdown: Fresher/Junior/Senior)
@@ -355,7 +355,7 @@ Login → Admin Dashboard (SCR-017)
     - PostCategory (dropdown, required)
     - Content (rich text editor - Quill.js, required)
     - Tags (multi-select / tag input từ danh sách `Tags` có sẵn)
-    - Thumbnail upload (input file ảnh, preview) [Sau MVP]
+    - Thumbnail: MVP dùng text input URL; Sau MVP dùng upload + preview (FR-020)
   - Action buttons:
     - MVP: "Đăng bài" (publish trực tiếp)
     - Sau MVP: "Lưu nháp" + "Gửi duyệt"
@@ -520,7 +520,7 @@ Login → Admin Dashboard (SCR-017)
 | SCR-015   | `GET /api/v1/users/{userId}/profile`, `GET /api/v1/candidates/me/activity`                                                                                                                                                                                                                   |
 | SCR-016   | `GET /api/v1/admin/jobs`, `PATCH /api/v1/admin/jobs/{jobId}/status`, `DELETE /api/v1/admin/jobs/{jobId}`                                                                                                                                                                                     |
 | SCR-017   | `GET /api/v1/admin/dashboard`                                                                                                                                                                                                                                                                |
-| SCR-018   | `PATCH /api/v1/admin/posts/{postId}/status`                                                                                                                                                                                                                                                  |
+| SCR-018   | `GET /api/v1/admin/posts`, `PATCH /api/v1/admin/posts/{postId}/status`                                                                                                                                                                                                                       |
 | SCR-019   | `GET /api/v1/admin/trash`, `PATCH /api/v1/admin/jobs/{jobId}/restore`, `PATCH /api/v1/admin/posts/{postId}/restore`                                                                                                                                                                          |
 
 ## 10. Changelog

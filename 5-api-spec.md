@@ -39,6 +39,7 @@
 - Time format: `ISO 8601` UTC, ví dụ: `2026-05-13T08:30:00Z`
 - String enum trong request/response chỉ dùng khi đã chốt rõ; trong database hệ thống vẫn có thể map về `tinyint`.
 - API list bắt buộc có phân trang.
+- **Cơ chế serve file**: Avatar, logo, thumbnail là file public — được serve trực tiếp từ thư mục tĩnh (VD: `/static/uploads/images/...`). CV là file riêng tư — được serve qua endpoint được bảo vệ `GET /api/v1/files/cv/{fileId}`, backend kiểm tra quyền truy cập (chính chủ, employer của job đã apply, admin) trước khi trả file. URL tuyệt đối của CV không được lộ ra ngoài response API công khai; các response chứa CV trả về `fileId` để frontend gọi qua endpoint protected.
 
 ### 3.1 Header chuẩn
 
@@ -248,7 +249,7 @@ Content-Type: application/json
     "gender": 1,
     "address": "Ho Chi Minh City",
     "bio": "Backend developer",
-    "cvUrl": "/uploads/cv/candidate-12.pdf",
+    "cvFileId": "cv_candidate_12",
     "experienceYears": 2,
     "skills": [
       {
@@ -280,7 +281,7 @@ Content-Type: application/json
   "gender": 1,
   "address": "Ho Chi Minh City",
   "bio": "Backend developer",
-  "cvUrl": "/uploads/cv/candidate-12.pdf",
+  "cvFileId": "cv_candidate_12",
   "experienceYears": 2,
   "skillIds": [1, 3, 5]
 }
@@ -503,7 +504,7 @@ Content-Type: application/json
         "applicationId": 8,
         "candidateId": 12,
         "candidateName": "Nguyen Van A",
-        "cvUrl": "/uploads/cv/candidate-12-apply-101.pdf",
+        "cvFileId": "cv_apply_8",
         "coverLetter": "I am interested in this role",
         "status": "Pending",
         "appliedAt": "2026-05-13T08:30:00Z",
@@ -771,7 +772,7 @@ Content-Type: application/json
 
 ```json
 {
-  "cvUrl": "/uploads/cv/candidate-12.pdf",
+  "cvFileId": "cv_candidate_12",
   "coverLetter": "I am interested in this role"
 }
 ```
@@ -876,6 +877,41 @@ Content-Type: application/json
   - `403 FORBIDDEN`
   - `404 POST_CATEGORY_NOT_FOUND`
   - `404 TAG_NOT_FOUND`
+
+### `POST /api/v1/posts/{postId}/submit`
+
+- Mô tả: Gửi bài viết từ `Draft` lên `Pending` để chờ admin duyệt.
+- Roles được phép gọi: `Candidate`, `Employer`
+- Auth: Bắt buộc
+- Phase: `Should`
+- Request body:
+
+```json
+{}
+```
+
+- Success response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "postId": 21,
+    "status": "Pending"
+  },
+  "message": "Post submitted for review"
+}
+```
+
+- Ghi chú:
+  - Chỉ hoạt động khi moderation workflow (Sau MVP) được bật.
+  - Chỉ tác giả mới được submit bài của mình.
+  - Chỉ có hiệu lực khi post đang ở trạng thái `Draft`.
+- Error codes:
+  - `401 UNAUTHORIZED`
+  - `403 FORBIDDEN`
+  - `404 POST_NOT_FOUND`
+  - `409 INVALID_STATE_TRANSITION`
 
 ### `PUT /api/v1/posts/{postId}`
 
@@ -1226,7 +1262,7 @@ Content-Type: application/json
 
 - Ghi chú:
   - Nếu người gọi là chính chủ candidate, backend có thể bổ sung `appliedJobs` và `savedJobs`.
-  - Guest không được nhận `cvUrl` hoặc lịch sử apply riêng tư.
+  - Guest không được nhận `cvFileId` hoặc lịch sử apply riêng tư. CV chỉ được truy cập qua `GET /api/v1/files/cv/{fileId}` với authorization phù hợp.
 - Error codes:
   - `404 USER_NOT_FOUND`
 
@@ -1311,6 +1347,26 @@ Content-Type: application/json
   - `400 INVALID_FILE_TYPE`
   - `400 FILE_TOO_LARGE`
   - `401 UNAUTHORIZED`
+
+## 12b. File Access API
+
+### `GET /api/v1/files/cv/{fileId}`
+
+- Mô tả: Lấy nội dung file CV (PDF) với kiểm soát quyền truy cập.
+- Roles được phép gọi: `Candidate` (chính chủ), `Employer` (sở hữu job mà candidate đã apply), `Admin`
+- Auth: Bắt buộc
+- Quy tắc truy cập:
+  - Candidate chỉ xem được CV của chính mình.
+  - Employer chỉ xem được CV của ứng viên đã apply vào job do employer sở hữu.
+  - Admin có quyền xem tất cả CV.
+- Response content type: `application/pdf`
+- Response: binary stream của file PDF.
+- Error codes:
+  - `401 UNAUTHORIZED`
+  - `403 FORBIDDEN`
+  - `404 FILE_NOT_FOUND`
+
+> **Ghi chú**: Avatar, logo, thumbnail không cần endpoint riêng vì là file public — được serve trực tiếp từ thư mục tĩnh. CV là file riêng tư duy nhất cần protected endpoint này. Các response API chứa CV trả về `cvFileId` (định danh để gọi endpoint này) thay vì URL trực tiếp.
 
 ## 13. Admin API
 
@@ -1432,6 +1488,44 @@ Content-Type: application/json
         "count": 5
       }
     ]
+  }
+}
+```
+
+- Error codes:
+  - `401 UNAUTHORIZED`
+  - `403 FORBIDDEN`
+
+### `GET /api/v1/admin/posts`
+
+- Mô tả: Lấy danh sách bài viết để kiểm duyệt (hỗ trợ moderation workflow).
+- Roles được phép gọi: `Admin`
+- Auth: Bắt buộc
+- Phase: `Should`
+- Query params:
+  - `status` (optional): `Pending` | `Published` | `Hidden`
+  - `page`
+  - `pageSize`
+- Success response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "postId": 21,
+        "title": "How to pass backend interview",
+        "authorName": "Nguyen Van A",
+        "categoryName": "Career",
+        "status": "Pending",
+        "createdAt": "2026-05-13T08:30:00Z"
+      }
+    ],
+    "page": 1,
+    "pageSize": 10,
+    "totalItems": 1,
+    "totalPages": 1
   }
 }
 ```
