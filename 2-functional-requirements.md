@@ -1,12 +1,15 @@
 # Functional Requirements
 
 ## 1. Mục tiêu tài liệu
+
 - Mô tả yêu cầu chức năng đủ chi tiết để đội BA, Dev, Tester và UI cùng bám vào triển khai.
 - Bám theo phạm vi sản phẩm trong `1-ideas-and-scope.md` và cấu trúc dữ liệu trong `3-database-description.md`.
 - Bao phủ toàn bộ tính năng `MVP` và `Sau MVP` trong mục 5 và mục 6 của tài liệu ý tưởng.
 
 ## 2. Phạm vi
+
 ### 2.1 In scope - MVP (`Must`)
+
 - Đăng ký, đăng nhập, đăng xuất và phân quyền theo 3 role: `Candidate`, `Employer`, `Admin`.
 - Quản lý hồ sơ ứng viên và hồ sơ doanh nghiệp.
 - Quản lý tin tuyển dụng: tạo, sửa, xóa, duyệt, hiển thị công khai.
@@ -17,6 +20,7 @@
 - Responsive, phân trang, thông báo thao tác thành công/thất bại.
 
 ### 2.2 In scope - Sau MVP (`Should`)
+
 - Rich text editor cho nội dung job và bài viết.
 - Nested comment 1 cấp cho bài viết cộng đồng.
 - Trang hồ sơ người dùng và hoạt động liên quan.
@@ -26,6 +30,7 @@
 - Soft delete và khôi phục dữ liệu.
 
 ### 2.3 Out of scope
+
 - Realtime chat.
 - Video upload.
 - AI matching, AI CV parsing.
@@ -36,46 +41,50 @@
 - Notification realtime, recommendation, analytics nâng cao và reporting system nâng cao trong giai đoạn hiện tại.
 
 ### 2.4 Giả định phân tích
+
 - `Admin` không tự đăng ký công khai, tài khoản quản trị được seed hoặc tạo bởi hệ thống.
 - Một tài khoản chỉ mang một vai trò nghiệp vụ chính tại một thời điểm: `Candidate` hoặc `Employer` hoặc `Admin`.
 - Khi người dùng "xóa" job hoặc post, hệ thống ưu tiên xóa mềm ở tầng dữ liệu nếu bảng có `IsDeleted`.
 - Trạng thái duyệt job trong phạm vi hiện tại gồm tối thiểu: `Pending`, `Approved`, `Hidden`.
 
 ## 3. Vai trò người dùng
+
 - `Guest`: người chưa đăng nhập, chỉ xem nội dung công khai.
 - `Candidate`: ứng viên tìm việc, quản lý hồ sơ cá nhân, ứng tuyển và tham gia cộng đồng.
 - `Employer`: doanh nghiệp/nhà tuyển dụng đăng tin, quản lý ứng viên và tham gia cộng đồng.
 - `Admin`: kiểm duyệt nội dung và theo dõi chỉ số hệ thống.
 
 ## 4. Danh sách use case
-| ID | Use case | Vai trò | Mức ưu tiên | Ghi chú |
-|---|---|---|---|---|
-| FR-001 | Đăng ký tài khoản | `Guest` | Must | Chọn loại tài khoản `Candidate` hoặc `Employer` |
-| FR-002 | Đăng nhập và đăng xuất | `Guest`, `Candidate`, `Employer`, `Admin` | Must | Duy trì phiên làm việc an toàn |
-| FR-003 | Quản lý hồ sơ ứng viên | `Candidate` | Must | Gồm avatar, thông tin cá nhân, skills, CV PDF |
-| FR-004 | Quản lý hồ sơ nhà tuyển dụng | `Employer` | Must | Gồm tên công ty, logo, mô tả, website, quy mô |
-| FR-005 | Quản lý tin tuyển dụng | `Employer` | Must | CRUD job và theo dõi trạng thái duyệt |
-| FR-006 | Xem và tìm kiếm danh sách job | `Guest`, `Candidate`, `Employer` | Must | Keyword, category, location, pagination |
-| FR-007 | Xem chi tiết job | `Guest`, `Candidate`, `Employer` | Must | Chỉ job `Approved` được công khai |
-| FR-008 | Ứng tuyển công việc | `Candidate` | Must | Dùng CV hiện tại hoặc CV đính kèm tại thời điểm apply |
-| FR-009 | Lưu và bỏ lưu job | `Candidate` | Must | Job bookmark cá nhân |
-| FR-010 | Quản lý danh sách ứng viên và trạng thái đơn | `Employer` | Must | Theo workflow `Pending -> Reviewed -> Interview -> Rejected/Accepted` |
-| FR-011 | Tạo và quản lý bài viết cộng đồng | `Candidate`, `Employer` | Must | Tạo, sửa, xóa bài của chính mình; gắn category/tag |
-| FR-012 | Xem feed cộng đồng | `Guest`, `Candidate`, `Employer` | Must | `Newest` và `Trending` đơn giản |
-| FR-013 | Tương tác với bài viết cộng đồng | `Candidate`, `Employer`, `Admin` | Must | Comment, upvote, bookmark |
-| FR-014 | Kiểm duyệt job | `Admin` | Must | Duyệt, ẩn, xóa mềm job vi phạm |
-| FR-015 | Xem dashboard quản trị | `Admin` | Must | Tổng quan users, jobs, posts, applications |
-| FR-016 | Soạn nội dung với rich text editor | `Employer`, `Candidate` | Should | Cho mô tả job và bài viết |
-| FR-017 | Trả lời bình luận 1 cấp | `Candidate`, `Employer`, `Admin` | Should | Reply trực tiếp vào comment gốc |
-| FR-018 | Xem trang hồ sơ người dùng | `Candidate`, `Employer`, `Guest` | Should | Bài viết đã đăng, job đã apply, job đã save |
-| FR-019 | Tạo và sử dụng slug SEO | Hệ thống | Should | Route thân thiện cho job, post, category, tag |
-| FR-020 | Upload ảnh nội dung | `Candidate`, `Employer` | Should | Avatar, logo công ty, thumbnail bài viết |
-| FR-021 | Kiểm duyệt bài viết cộng đồng | `Candidate`, `Employer`, `Admin` | Should | Workflow `Draft`, `Pending`, `Published`, `Hidden` |
-| FR-022 | Khôi phục dữ liệu đã xóa mềm | `Admin` | Should | Khôi phục job/post đã xóa mềm |
+
+| ID     | Use case                                     | Vai trò                                   | Mức ưu tiên | Ghi chú                                                               |
+| ------ | -------------------------------------------- | ----------------------------------------- | ----------- | --------------------------------------------------------------------- |
+| FR-001 | Đăng ký tài khoản                            | `Guest`                                   | Must        | Chọn loại tài khoản `Candidate` hoặc `Employer`                       |
+| FR-002 | Đăng nhập và đăng xuất                       | `Guest`, `Candidate`, `Employer`, `Admin` | Must        | Duy trì phiên làm việc an toàn                                        |
+| FR-003 | Quản lý hồ sơ ứng viên                       | `Candidate`                               | Must        | Gồm avatar, thông tin cá nhân, skills, CV PDF                         |
+| FR-004 | Quản lý hồ sơ nhà tuyển dụng                 | `Employer`                                | Must        | Gồm tên công ty, logo, mô tả, website, quy mô                         |
+| FR-005 | Quản lý tin tuyển dụng                       | `Employer`                                | Must        | CRUD job và theo dõi trạng thái duyệt                                 |
+| FR-006 | Xem và tìm kiếm danh sách job                | `Guest`, `Candidate`, `Employer`          | Must        | Keyword, category, location, pagination                               |
+| FR-007 | Xem chi tiết job                             | `Guest`, `Candidate`, `Employer`          | Must        | Chỉ job `Approved` được công khai                                     |
+| FR-008 | Ứng tuyển công việc                          | `Candidate`                               | Must        | Dùng CV hiện tại hoặc CV đính kèm tại thời điểm apply                 |
+| FR-009 | Lưu và bỏ lưu job                            | `Candidate`                               | Must        | Job bookmark cá nhân                                                  |
+| FR-010 | Quản lý danh sách ứng viên và trạng thái đơn | `Employer`                                | Must        | Theo workflow `Pending -> Reviewed -> Interview -> Rejected/Accepted` |
+| FR-011 | Tạo và quản lý bài viết cộng đồng            | `Candidate`, `Employer`                   | Must        | Tạo, sửa, xóa bài của chính mình; gắn category/tag                    |
+| FR-012 | Xem feed cộng đồng                           | `Guest`, `Candidate`, `Employer`          | Must        | `Newest` và `Trending` đơn giản                                       |
+| FR-013 | Tương tác với bài viết cộng đồng             | `Candidate`, `Employer`, `Admin`          | Must        | Comment, upvote, bookmark                                             |
+| FR-014 | Kiểm duyệt job                               | `Admin`                                   | Must        | Duyệt, ẩn, xóa mềm job vi phạm                                        |
+| FR-015 | Xem dashboard quản trị                       | `Admin`                                   | Must        | Tổng quan users, jobs, posts, applications                            |
+| FR-016 | Soạn nội dung với rich text editor           | `Employer`, `Candidate`                   | Should      | Cho mô tả job và bài viết                                             |
+| FR-017 | Trả lời bình luận 1 cấp                      | `Candidate`, `Employer`, `Admin`          | Should      | Reply trực tiếp vào comment gốc                                       |
+| FR-018 | Xem trang hồ sơ người dùng                   | `Candidate`, `Employer`, `Guest`          | Should      | Bài viết đã đăng, job đã apply, job đã save                           |
+| FR-019 | Tạo và sử dụng slug SEO                      | Hệ thống                                  | Should      | Route thân thiện cho job, post, category, tag                         |
+| FR-020 | Upload ảnh nội dung                          | `Candidate`, `Employer`                   | Should      | Avatar, logo công ty, thumbnail bài viết                              |
+| FR-021 | Kiểm duyệt bài viết cộng đồng                | `Candidate`, `Employer`, `Admin`          | Should      | Workflow `Draft`, `Pending`, `Published`, `Hidden`                    |
+| FR-022 | Khôi phục dữ liệu đã xóa mềm                 | `Admin`                                   | Should      | Khôi phục job/post đã xóa mềm                                         |
 
 ## 5. Use case chi tiết
 
 ### FR-001 - Đăng ký tài khoản
+
 - Mô tả: Người dùng tạo tài khoản mới và chọn loại tài khoản `Candidate` hoặc `Employer`.
 - Actor: `Guest`
 - Preconditions:
@@ -102,6 +111,7 @@
   2. Given email đã tồn tại, When người dùng gửi form đăng ký, Then hệ thống trả lỗi `409` và không tạo thêm bản ghi nào.
 
 ### FR-002 - Đăng nhập và đăng xuất
+
 - Mô tả: Người dùng xác thực vào hệ thống và kết thúc phiên làm việc khi cần.
 - Actor: `Guest`, `Candidate`, `Employer`, `Admin`
 - Preconditions:
@@ -127,6 +137,7 @@
   2. Given người dùng đã đăng nhập, When người dùng bấm đăng xuất, Then phiên hiện tại không còn dùng được cho request tiếp theo.
 
 ### FR-003 - Quản lý hồ sơ ứng viên
+
 - Mô tả: Ứng viên cập nhật hồ sơ cá nhân phục vụ tìm việc và ứng tuyển.
 - Actor: `Candidate`
 - Preconditions:
@@ -153,6 +164,7 @@
   2. Given ứng viên tải lên tệp không hợp lệ, When bấm lưu, Then hệ thống không cập nhật hồ sơ và hiển thị lỗi phù hợp.
 
 ### FR-004 - Quản lý hồ sơ nhà tuyển dụng
+
 - Mô tả: Nhà tuyển dụng cập nhật thông tin công ty để sử dụng trong tin tuyển dụng và hồ sơ công khai.
 - Actor: `Employer`
 - Preconditions:
@@ -177,6 +189,7 @@
   2. Given employer chưa nhập tên công ty, When bấm lưu, Then hệ thống báo lỗi validation.
 
 ### FR-005 - Quản lý tin tuyển dụng
+
 - Mô tả: Nhà tuyển dụng tạo, sửa, xem danh sách và xóa job của chính mình.
 - Actor: `Employer`
 - Preconditions:
@@ -204,6 +217,7 @@
   2. Given employer sở hữu một job, When xóa job, Then job không còn hiển thị công khai và dữ liệu được giữ để phục vụ khôi phục nếu bật soft delete.
 
 ### FR-006 - Xem và tìm kiếm danh sách job
+
 - Mô tả: Người dùng duyệt danh sách job công khai và áp dụng bộ lọc tìm kiếm.
 - Actor: `Guest`, `Candidate`, `Employer`
 - Preconditions:
@@ -226,6 +240,7 @@
   2. Given job chưa được duyệt, When guest mở danh sách job, Then job đó không xuất hiện.
 
 ### FR-007 - Xem chi tiết job
+
 - Mô tả: Người dùng xem đầy đủ nội dung một job công khai.
 - Actor: `Guest`, `Candidate`, `Employer`
 - Preconditions:
@@ -248,6 +263,7 @@
   2. Given một job `Hidden` hoặc đã xóa mềm, When guest truy cập URL, Then hệ thống không hiển thị nội dung công khai.
 
 ### FR-008 - Ứng tuyển công việc
+
 - Mô tả: Ứng viên nộp đơn ứng tuyển cho một job.
 - Actor: `Candidate`
 - Preconditions:
@@ -275,6 +291,7 @@
   2. Given candidate đã apply job trước đó, When apply lần nữa, Then hệ thống từ chối và không tạo đơn mới.
 
 ### FR-009 - Lưu và bỏ lưu job
+
 - Mô tả: Ứng viên lưu job để xem lại sau hoặc bỏ lưu khi không còn nhu cầu.
 - Actor: `Candidate`
 - Preconditions:
@@ -300,6 +317,7 @@
   2. Given candidate đã lưu job, When bấm `Unsave`, Then bản ghi lưu bị xóa và UI phản ánh ngay trạng thái mới.
 
 ### FR-010 - Quản lý danh sách ứng viên và trạng thái đơn
+
 - Mô tả: Nhà tuyển dụng xem ứng viên của từng job và cập nhật trạng thái đơn theo workflow hợp lệ.
 - Actor: `Employer`
 - Preconditions:
@@ -325,6 +343,7 @@
   2. Given application đã ở `Accepted`, When employer cố chuyển về `Reviewed`, Then hệ thống từ chối do vi phạm workflow.
 
 ### FR-011 - Tạo và quản lý bài viết cộng đồng
+
 - Mô tả: Người dùng đã đăng nhập tạo, sửa và xóa bài viết cộng đồng của chính mình.
 - Actor: `Candidate`, `Employer`
 - Preconditions:
@@ -350,6 +369,7 @@
   2. Given người dùng không phải tác giả, When sửa bài của người khác, Then hệ thống từ chối thao tác.
 
 ### FR-012 - Xem feed cộng đồng
+
 - Mô tả: Người dùng xem danh sách bài viết cộng đồng theo `Newest` hoặc `Trending`.
 - Actor: `Guest`, `Candidate`, `Employer`
 - Preconditions:
@@ -372,6 +392,7 @@
   2. Given có dữ liệu comment và upvote, When người dùng chọn `Trending`, Then hệ thống dùng điểm xu hướng đơn giản để sắp xếp.
 
 ### FR-013 - Tương tác với bài viết cộng đồng
+
 - Mô tả: Người dùng tương tác với bài viết thông qua comment, upvote, bookmark và reply 1 cấp nếu tính năng đã bật.
 - Actor: `Candidate`, `Employer`, `Admin`
 - Preconditions:
@@ -400,6 +421,7 @@
   2. Given người dùng đã upvote một bài, When bấm upvote lần nữa, Then hệ thống toggle hoặc từ chối theo thiết kế đã chọn và dữ liệu luôn chỉ có tối đa một bản ghi active cho mỗi người dùng.
 
 ### FR-014 - Kiểm duyệt job
+
 - Mô tả: Admin duyệt, ẩn hoặc xóa mềm tin tuyển dụng vi phạm.
 - Actor: `Admin`
 - Preconditions:
@@ -424,6 +446,7 @@
   2. Given job vi phạm, When admin chọn `Hide` hoặc `Delete`, Then job không còn hiển thị trên danh sách công khai.
 
 ### FR-015 - Xem dashboard quản trị
+
 - Mô tả: Admin theo dõi tổng quan hệ thống qua các chỉ số và biểu đồ cơ bản.
 - Actor: `Admin`
 - Preconditions:
@@ -446,6 +469,7 @@
   2. Given chưa có application, When mở biểu đồ theo thời gian, Then hệ thống hiển thị biểu đồ rỗng hợp lệ thay vì lỗi.
 
 ### FR-016 - Soạn nội dung với rich text editor
+
 - Mô tả: Người dùng soạn mô tả job và bài viết bằng editor hỗ trợ định dạng cơ bản.
 - Actor: `Employer`, `Candidate`
 - Preconditions:
@@ -467,6 +491,7 @@
   2. Given người dùng dán nội dung có script, When lưu, Then hệ thống sanitize và không render mã nguy hiểm.
 
 ### FR-017 - Trả lời bình luận 1 cấp
+
 - Mô tả: Người dùng reply trực tiếp vào một bình luận gốc trong bài viết cộng đồng.
 - Actor: `Candidate`, `Employer`, `Admin`
 - Preconditions:
@@ -491,6 +516,7 @@
   2. Given comment cha đã là reply, When người dùng tiếp tục reply, Then hệ thống từ chối vì vượt quá số cấp hỗ trợ.
 
 ### FR-018 - Xem trang hồ sơ người dùng
+
 - Mô tả: Người dùng xem trang hồ sơ công khai và hoạt động liên quan của mình hoặc của người khác theo quyền cho phép.
 - Actor: `Candidate`, `Employer`, `Guest`
 - Preconditions:
@@ -514,6 +540,7 @@
   2. Given guest mở hồ sơ candidate khác, When tải trang, Then hệ thống chỉ hiển thị phần công khai và không lộ CV hoặc lịch sử apply.
 
 ### FR-019 - Tạo và sử dụng slug SEO
+
 - Mô tả: Hệ thống tạo slug thân thiện URL cho job, bài viết, category và tag.
 - Actor: Hệ thống
 - Preconditions:
@@ -536,6 +563,7 @@
   2. Given hai bài viết có title giống nhau, When tạo slug, Then hệ thống vẫn đảm bảo hai slug là duy nhất.
 
 ### FR-020 - Upload ảnh nội dung
+
 - Mô tả: Người dùng tải lên avatar, logo công ty và thumbnail bài viết.
 - Actor: `Candidate`, `Employer`
 - Preconditions:
@@ -559,6 +587,7 @@
   2. Given employer chọn tệp vượt giới hạn, When upload, Then hệ thống báo lỗi và không ghi đè logo hiện tại.
 
 ### FR-021 - Kiểm duyệt bài viết cộng đồng
+
 - Mô tả: Bài viết cộng đồng đi qua workflow kiểm duyệt sau MVP trước khi công khai.
 - Actor: `Candidate`, `Employer`, `Admin`
 - Preconditions:
@@ -585,6 +614,7 @@
   2. Given bài viết ở `Pending`, When admin duyệt, Then bài chuyển sang `Published` và xuất hiện trên feed công khai.
 
 ### FR-022 - Khôi phục dữ liệu đã xóa mềm
+
 - Mô tả: Admin khôi phục job hoặc bài viết đã bị xóa mềm nhưng còn lưu trong database.
 - Actor: `Admin`
 - Preconditions:
@@ -609,81 +639,84 @@
   2. Given post không bị xóa mềm, When gọi restore, Then hệ thống từ chối thao tác không hợp lệ.
 
 ## 6. Business rules tổng hợp
-| Rule ID | Mô tả | Áp dụng cho |
-|---|---|---|
-| `BR-001` | `Email` và `UserName` phải duy nhất trong hệ thống. | Đăng ký tài khoản |
-| `BR-002` | `Admin` không đăng ký qua luồng public. | Đăng ký tài khoản |
-| `BR-003` | Sau khi đăng ký phải tạo hồ sơ nghiệp vụ tương ứng với role. | Đăng ký tài khoản |
-| `BR-004` | Chỉ tài khoản `IsActive = true` mới được đăng nhập. | Đăng nhập |
-| `BR-005` | Hệ thống phải cập nhật `LastLoginAt` sau đăng nhập thành công. | Đăng nhập |
-| `BR-006` | Chỉ `Candidate` mới được cập nhật `CandidateProfiles`. | Hồ sơ ứng viên |
-| `BR-007` | `CandidateSkills` là quan hệ nhiều-nhiều; không được lưu trùng cùng một cặp `CandidateId` và `SkillId`. | Hồ sơ ứng viên |
-| `BR-008` | `CVUrl` phải trỏ tới tệp PDF hợp lệ và còn truy cập được tại thời điểm apply. | Hồ sơ ứng viên, ứng tuyển |
-| `BR-009` | Employer phải có `CompanyName` trước khi tạo job. | Hồ sơ employer, job |
-| `BR-010` | Mỗi job phải thuộc đúng một `EmployerProfiles` và một `JobCategories`. | Job |
-| `BR-011` | `Deadline` phải lớn hơn thời điểm lưu job. | Job |
-| `BR-012` | Chỉ job `Approved` và chưa bị xóa mềm mới được hiển thị công khai. | Job list, job detail, kiểm duyệt job |
-| `BR-013` | Job mới tạo hoặc job sửa nội dung quan trọng phải quay lại trạng thái `Pending`. | Job |
-| `BR-014` | Employer chỉ được sửa/xóa job do mình sở hữu. | Job |
-| `BR-015` | API danh sách job phải hỗ trợ phân trang và chỉ nhận bộ lọc `keyword`, `category`, `location` trong scope hiện tại. | Job search |
-| `BR-016` | Mỗi lượt mở job detail hợp lệ sẽ tăng `ViewCount` thêm 1. | Job detail |
-| `BR-017` | Chỉ `Candidate` mới được apply job. | Ứng tuyển |
-| `BR-018` | Upload file phải kiểm tra loại tệp, kích thước và đường dẫn lưu trữ an toàn. | Upload CV, avatar, logo, thumbnail |
-| `BR-019` | Xóa job trong nghiệp vụ được hiểu là ẩn khỏi người dùng cuối; ở tầng dữ liệu ưu tiên soft delete nếu có `IsDeleted`. | Job |
-| `BR-020` | Bộ lọc job không được trả về bản ghi `Hidden`, `Pending` hoặc `IsDeleted = true`. | Job search |
-| `BR-021` | Mỗi candidate chỉ được có tối đa một application cho mỗi job. | Ứng tuyển |
-| `BR-022` | Không cho apply job khi đã quá `Deadline`. | Ứng tuyển |
-| `BR-023` | `Applications.Status` phải khởi tạo là `Pending`. | Ứng tuyển |
-| `BR-024` | Mỗi candidate chỉ được lưu tối đa một bản ghi `SavedJobs` cho mỗi job. | Save job |
-| `BR-025` | Chỉ employer sở hữu job mới được xem application của job đó. | Quản lý application |
-| `BR-026` | Workflow application chỉ cho phép: `Pending -> Reviewed -> Interview -> Accepted/Rejected`, không cho rollback từ `Accepted`. | Quản lý application |
-| `BR-027` | Chỉ tác giả mới được sửa/xóa bài viết của mình, trừ admin trong vai trò kiểm duyệt. | Bài viết cộng đồng |
-| `BR-028` | `Posts` phải thuộc một `PostCategories`; tag là tùy chọn nhưng nếu có phải tồn tại trong `Tags`. | Bài viết cộng đồng |
-| `BR-029` | Trong MVP có thể publish trực tiếp; khi moderation workflow bật thì phải dùng `Draft/Pending/Published/Hidden`. | Bài viết cộng đồng |
-| `BR-030` | Xóa bài viết trong nghiệp vụ ưu tiên xóa mềm bằng `IsDeleted` nếu đã bật soft delete. | Bài viết cộng đồng |
-| `BR-031` | Feed cộng đồng chỉ hiển thị bài `Published` và chưa bị xóa mềm. | Feed cộng đồng |
-| `BR-032` | `Trending` được tính tối thiểu từ `UpvoteCount + CommentCount`. | Feed cộng đồng |
-| `BR-033` | Mỗi user chỉ có tối đa một upvote active cho mỗi post. | Upvote post |
-| `BR-034` | `ParentCommentId` chỉ hỗ trợ reply 1 cấp. | Comment/reply |
-| `BR-035` | Mỗi user chỉ có tối đa một bookmark active cho mỗi post. | Bookmark post |
-| `BR-036` | Khi tạo/xóa comment, upvote hoặc bookmark, hệ thống phải đồng bộ lại các trường cache count liên quan trong `Posts`. | Tương tác bài viết |
-| `BR-037` | Hành động kiểm duyệt job phải được ghi log hoặc lưu dấu vết audit khi hệ thống có hỗ trợ. | Kiểm duyệt job |
-| `BR-038` | Dashboard quản trị dùng dữ liệu tổng hợp theo thời điểm truy vấn, không yêu cầu realtime. | Dashboard |
-| `BR-039` | Nội dung HTML từ rich text editor phải được sanitize trước khi lưu và render. | Rich text editor |
-| `BR-040` | Dữ liệu riêng tư như CV, danh sách job đã apply chỉ hiển thị cho chính chủ hoặc admin nếu có quyền. | User profile page |
-| `BR-041` | `Slug` phải duy nhất trong từng bảng đích và được tái tạo khi title/name thay đổi nếu thiết kế cho phép. | SEO slug |
-| `BR-042` | Ảnh upload phải là định dạng web an toàn như `jpg`, `jpeg`, `png`, `webp`. | Upload ảnh |
-| `BR-043` | `Draft` chỉ tác giả nhìn thấy; `Pending` chờ admin; `Published` công khai; `Hidden` không công khai. | Moderation workflow post |
-| `BR-044` | Chỉ admin mới được restore bản ghi đã xóa mềm. | Soft delete/restore |
+
+| Rule ID  | Mô tả                                                                                                                         | Áp dụng cho                          |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `BR-001` | `Email` và `UserName` phải duy nhất trong hệ thống.                                                                           | Đăng ký tài khoản                    |
+| `BR-002` | `Admin` không đăng ký qua luồng public.                                                                                       | Đăng ký tài khoản                    |
+| `BR-003` | Sau khi đăng ký phải tạo hồ sơ nghiệp vụ tương ứng với role.                                                                  | Đăng ký tài khoản                    |
+| `BR-004` | Chỉ tài khoản `IsActive = true` mới được đăng nhập.                                                                           | Đăng nhập                            |
+| `BR-005` | Hệ thống phải cập nhật `LastLoginAt` sau đăng nhập thành công.                                                                | Đăng nhập                            |
+| `BR-006` | Chỉ `Candidate` mới được cập nhật `CandidateProfiles`.                                                                        | Hồ sơ ứng viên                       |
+| `BR-007` | `CandidateSkills` là quan hệ nhiều-nhiều; không được lưu trùng cùng một cặp `CandidateId` và `SkillId`.                       | Hồ sơ ứng viên                       |
+| `BR-008` | `CVUrl` phải trỏ tới tệp PDF hợp lệ và còn truy cập được tại thời điểm apply.                                                 | Hồ sơ ứng viên, ứng tuyển            |
+| `BR-009` | Employer phải có `CompanyName` trước khi tạo job.                                                                             | Hồ sơ employer, job                  |
+| `BR-010` | Mỗi job phải thuộc đúng một `EmployerProfiles` và một `JobCategories`.                                                        | Job                                  |
+| `BR-011` | `Deadline` phải lớn hơn thời điểm lưu job.                                                                                    | Job                                  |
+| `BR-012` | Chỉ job `Approved` và chưa bị xóa mềm mới được hiển thị công khai.                                                            | Job list, job detail, kiểm duyệt job |
+| `BR-013` | Job mới tạo hoặc job sửa nội dung quan trọng phải quay lại trạng thái `Pending`.                                              | Job                                  |
+| `BR-014` | Employer chỉ được sửa/xóa job do mình sở hữu.                                                                                 | Job                                  |
+| `BR-015` | API danh sách job phải hỗ trợ phân trang và chỉ nhận bộ lọc `keyword`, `category`, `location` trong scope hiện tại.           | Job search                           |
+| `BR-016` | Mỗi lượt mở job detail hợp lệ sẽ tăng `ViewCount` thêm 1.                                                                     | Job detail                           |
+| `BR-017` | Chỉ `Candidate` mới được apply job.                                                                                           | Ứng tuyển                            |
+| `BR-018` | Upload file phải kiểm tra loại tệp, kích thước và đường dẫn lưu trữ an toàn.                                                  | Upload CV, avatar, logo, thumbnail   |
+| `BR-019` | Xóa job trong nghiệp vụ được hiểu là ẩn khỏi người dùng cuối; ở tầng dữ liệu ưu tiên soft delete nếu có `IsDeleted`.          | Job                                  |
+| `BR-020` | Bộ lọc job không được trả về bản ghi `Hidden`, `Pending` hoặc `IsDeleted = true`.                                             | Job search                           |
+| `BR-021` | Mỗi candidate chỉ được có tối đa một application cho mỗi job.                                                                 | Ứng tuyển                            |
+| `BR-022` | Không cho apply job khi đã quá `Deadline`.                                                                                    | Ứng tuyển                            |
+| `BR-023` | `Applications.Status` phải khởi tạo là `Pending`.                                                                             | Ứng tuyển                            |
+| `BR-024` | Mỗi candidate chỉ được lưu tối đa một bản ghi `SavedJobs` cho mỗi job.                                                        | Save job                             |
+| `BR-025` | Chỉ employer sở hữu job mới được xem application của job đó.                                                                  | Quản lý application                  |
+| `BR-026` | Workflow application chỉ cho phép: `Pending -> Reviewed -> Interview -> Accepted/Rejected`, không cho rollback từ `Accepted`. | Quản lý application                  |
+| `BR-027` | Chỉ tác giả mới được sửa/xóa bài viết của mình, trừ admin trong vai trò kiểm duyệt.                                           | Bài viết cộng đồng                   |
+| `BR-028` | `Posts` phải thuộc một `PostCategories`; tag là tùy chọn nhưng nếu có phải tồn tại trong `Tags`.                              | Bài viết cộng đồng                   |
+| `BR-029` | Trong MVP có thể publish trực tiếp; khi moderation workflow bật thì phải dùng `Draft/Pending/Published/Hidden`.               | Bài viết cộng đồng                   |
+| `BR-030` | Xóa bài viết trong nghiệp vụ ưu tiên xóa mềm bằng `IsDeleted` nếu đã bật soft delete.                                         | Bài viết cộng đồng                   |
+| `BR-031` | Feed cộng đồng chỉ hiển thị bài `Published` và chưa bị xóa mềm.                                                               | Feed cộng đồng                       |
+| `BR-032` | `Trending` được tính tối thiểu từ `UpvoteCount + CommentCount`.                                                               | Feed cộng đồng                       |
+| `BR-033` | Mỗi user chỉ có tối đa một upvote active cho mỗi post.                                                                        | Upvote post                          |
+| `BR-034` | `ParentCommentId` chỉ hỗ trợ reply 1 cấp.                                                                                     | Comment/reply                        |
+| `BR-035` | Mỗi user chỉ có tối đa một bookmark active cho mỗi post.                                                                      | Bookmark post                        |
+| `BR-036` | Khi tạo/xóa comment, upvote hoặc bookmark, hệ thống phải đồng bộ lại các trường cache count liên quan trong `Posts`.          | Tương tác bài viết                   |
+| `BR-037` | Hành động kiểm duyệt job phải được ghi log hoặc lưu dấu vết audit khi hệ thống có hỗ trợ.                                     | Kiểm duyệt job                       |
+| `BR-038` | Dashboard quản trị dùng dữ liệu tổng hợp theo thời điểm truy vấn, không yêu cầu realtime.                                     | Dashboard                            |
+| `BR-039` | Nội dung HTML từ rich text editor phải được sanitize trước khi lưu và render.                                                 | Rich text editor                     |
+| `BR-040` | Dữ liệu riêng tư như CV, danh sách job đã apply chỉ hiển thị cho chính chủ hoặc admin nếu có quyền.                           | User profile page                    |
+| `BR-041` | `Slug` phải duy nhất trong từng bảng đích và được tái tạo khi title/name thay đổi nếu thiết kế cho phép.                      | SEO slug                             |
+| `BR-042` | Ảnh upload phải là định dạng web an toàn như `jpg`, `jpeg`, `png`, `webp`.                                                    | Upload ảnh                           |
+| `BR-043` | `Draft` chỉ tác giả nhìn thấy; `Pending` chờ admin; `Published` công khai; `Hidden` không công khai.                          | Moderation workflow post             |
+| `BR-044` | Chỉ admin mới được restore bản ghi đã xóa mềm.                                                                                | Soft delete/restore                  |
 
 ## 7. Traceability
-| Use case ID | API | DB table | UI screen | Test case |
-|---|---|---|---|---|
-| `FR-001` | `POST /api/v1/auth/register` | `AspNetUsers`, `AspNetRoles`, `CandidateProfiles`, `EmployerProfiles` | `SCR-005 Register` | `TC-FR-001` |
-| `FR-002` | `POST /api/v1/auth/login`, `POST /api/v1/auth/logout` | `AspNetUsers` | `SCR-004 Login` | `TC-FR-002` |
-| `FR-003` | `GET /api/v1/candidates/me`, `PUT /api/v1/candidates/me` | `CandidateProfiles`, `Skills`, `CandidateSkills` | `SCR-006 Candidate Profile` | `TC-FR-003` |
-| `FR-004` | `GET /api/v1/employers/me`, `PUT /api/v1/employers/me` | `EmployerProfiles` | `SCR-007 Employer Profile` | `TC-FR-004` |
-| `FR-005` | `GET /api/v1/employer/jobs`, `POST /api/v1/jobs`, `PUT /api/v1/jobs/{jobId}`, `DELETE /api/v1/jobs/{jobId}` | `Jobs`, `JobCategories` | `SCR-008 Employer Job List`, `SCR-009 Job Form` | `TC-FR-005` |
-| `FR-006` | `GET /api/v1/jobs` | `Jobs`, `JobCategories`, `EmployerProfiles` | `SCR-002 Job List` | `TC-FR-006` |
-| `FR-007` | `GET /api/v1/jobs/{slug}` | `Jobs`, `EmployerProfiles`, `JobCategories` | `SCR-003 Job Detail` | `TC-FR-007` |
-| `FR-008` | `POST /api/v1/jobs/{jobId}/apply` | `Applications`, `Jobs`, `CandidateProfiles` | `SCR-003 Job Detail` | `TC-FR-008` |
-| `FR-009` | `POST /api/v1/jobs/{jobId}/save`, `DELETE /api/v1/jobs/{jobId}/save`, `GET /api/v1/candidates/me/saved-jobs` | `SavedJobs` | `SCR-003 Job Detail`, `SCR-010 Saved Jobs` | `TC-FR-009` |
-| `FR-010` | `GET /api/v1/employer/jobs/{jobId}/applications`, `PATCH /api/v1/applications/{applicationId}/status` | `Applications`, `Jobs` | `SCR-011 Employer Applications` | `TC-FR-010` |
-| `FR-011` | `POST /api/v1/posts`, `PUT /api/v1/posts/{postId}`, `DELETE /api/v1/posts/{postId}` | `Posts`, `PostCategories`, `Tags`, `PostTags` | `SCR-014 Post Editor` | `TC-FR-011` |
-| `FR-012` | `GET /api/v1/posts`, `GET /api/v1/posts/{slug}` | `Posts`, `PostCategories`, `PostVotes`, `PostComments`, `PostBookmarks` | `SCR-012 Community Feed`, `SCR-013 Post Detail` | `TC-FR-012` |
-| `FR-013` | `POST /api/v1/posts/{postId}/comments`, `POST /api/v1/posts/{postId}/votes`, `DELETE /api/v1/posts/{postId}/votes`, `POST /api/v1/posts/{postId}/bookmarks`, `DELETE /api/v1/posts/{postId}/bookmarks` | `PostComments`, `PostVotes`, `PostBookmarks`, `Posts` | `SCR-013 Post Detail` | `TC-FR-013` |
-| `FR-014` | `GET /api/v1/admin/jobs`, `PATCH /api/v1/admin/jobs/{jobId}/status`, `DELETE /api/v1/admin/jobs/{jobId}` | `Jobs` | `SCR-016 Admin Job Moderation` | `TC-FR-014` |
-| `FR-015` | `GET /api/v1/admin/dashboard` | `AspNetUsers`, `Jobs`, `Posts`, `Applications`, `JobCategories` | `SCR-017 Admin Dashboard` | `TC-FR-015` |
-| `FR-016` | Tích hợp trong API tạo/sửa `jobs` và `posts` | `Jobs`, `Posts` | `SCR-009 Job Form`, `SCR-014 Post Editor` | `TC-FR-016` |
-| `FR-017` | `POST /api/v1/posts/{postId}/comments/{commentId}/reply` | `PostComments`, `Posts` | `SCR-013 Post Detail` | `TC-FR-017` |
-| `FR-018` | `GET /api/v1/users/{userId}/profile`, `GET /api/v1/candidates/me/activity` | `CandidateProfiles`, `EmployerProfiles`, `Posts`, `Applications`, `SavedJobs` | `SCR-015 User Profile` | `TC-FR-018` |
-| `FR-019` | Tích hợp trong API tạo/sửa `jobs`, `posts`, `categories`, `tags` | `Jobs`, `Posts`, `JobCategories`, `PostCategories`, `Tags` | `SCR-002 Job List`, `SCR-003 Job Detail`, `SCR-012 Community Feed`, `SCR-013 Post Detail` | `TC-FR-019` |
-| `FR-020` | `POST /api/v1/uploads/avatar`, `POST /api/v1/uploads/logo`, `POST /api/v1/uploads/post-thumbnail` | `CandidateProfiles`, `EmployerProfiles`, `Posts` | `SCR-006 Candidate Profile`, `SCR-007 Employer Profile`, `SCR-014 Post Editor` | `TC-FR-020` |
-| `FR-021` | `POST /api/v1/posts/{postId}/submit`, `PATCH /api/v1/admin/posts/{postId}/status` | `Posts` | `SCR-014 Post Editor`, `SCR-018 Admin Post Moderation` | `TC-FR-021` |
-| `FR-022` | `GET /api/v1/admin/trash`, `PATCH /api/v1/admin/jobs/{jobId}/restore`, `PATCH /api/v1/admin/posts/{postId}/restore` | `Jobs`, `Posts` | `SCR-019 Admin Trash Restore` | `TC-FR-022` |
+
+| Use case ID | API                                                                                                                                                                                                    | DB table                                                                      | UI screen                                                                                 | Test case   |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------- |
+| `FR-001`    | `POST /api/v1/auth/register`                                                                                                                                                                           | `AspNetUsers`, `AspNetRoles`, `CandidateProfiles`, `EmployerProfiles`         | `SCR-005 Register`                                                                        | `TC-FR-001` |
+| `FR-002`    | `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`                                                                                                                                                  | `AspNetUsers`                                                                 | `SCR-004 Login`                                                                           | `TC-FR-002` |
+| `FR-003`    | `GET /api/v1/candidates/me`, `PUT /api/v1/candidates/me`                                                                                                                                               | `CandidateProfiles`, `Skills`, `CandidateSkills`                              | `SCR-006 Candidate Profile`                                                               | `TC-FR-003` |
+| `FR-004`    | `GET /api/v1/employers/me`, `PUT /api/v1/employers/me`                                                                                                                                                 | `EmployerProfiles`                                                            | `SCR-007 Employer Profile`                                                                | `TC-FR-004` |
+| `FR-005`    | `GET /api/v1/employer/jobs`, `POST /api/v1/jobs`, `PUT /api/v1/jobs/{jobId}`, `DELETE /api/v1/jobs/{jobId}`                                                                                            | `Jobs`, `JobCategories`                                                       | `SCR-008 Employer Job List`, `SCR-009 Job Form`                                           | `TC-FR-005` |
+| `FR-006`    | `GET /api/v1/jobs`                                                                                                                                                                                     | `Jobs`, `JobCategories`, `EmployerProfiles`                                   | `SCR-002 Job List`                                                                        | `TC-FR-006` |
+| `FR-007`    | `GET /api/v1/jobs/{slug}`                                                                                                                                                                              | `Jobs`, `EmployerProfiles`, `JobCategories`                                   | `SCR-003 Job Detail`                                                                      | `TC-FR-007` |
+| `FR-008`    | `POST /api/v1/jobs/{jobId}/apply`                                                                                                                                                                      | `Applications`, `Jobs`, `CandidateProfiles`                                   | `SCR-003 Job Detail`                                                                      | `TC-FR-008` |
+| `FR-009`    | `POST /api/v1/jobs/{jobId}/save`, `DELETE /api/v1/jobs/{jobId}/save`, `GET /api/v1/candidates/me/saved-jobs`                                                                                           | `SavedJobs`                                                                   | `SCR-003 Job Detail`, `SCR-010 Saved Jobs`                                                | `TC-FR-009` |
+| `FR-010`    | `GET /api/v1/employer/jobs/{jobId}/applications`, `PATCH /api/v1/applications/{applicationId}/status`                                                                                                  | `Applications`, `Jobs`                                                        | `SCR-011 Employer Applications`                                                           | `TC-FR-010` |
+| `FR-011`    | `POST /api/v1/posts`, `PUT /api/v1/posts/{postId}`, `DELETE /api/v1/posts/{postId}`                                                                                                                    | `Posts`, `PostCategories`, `Tags`, `PostTags`                                 | `SCR-014 Post Editor`                                                                     | `TC-FR-011` |
+| `FR-012`    | `GET /api/v1/posts`, `GET /api/v1/posts/{slug}`                                                                                                                                                        | `Posts`, `PostCategories`, `PostVotes`, `PostComments`, `PostBookmarks`       | `SCR-012 Community Feed`, `SCR-013 Post Detail`                                           | `TC-FR-012` |
+| `FR-013`    | `POST /api/v1/posts/{postId}/comments`, `POST /api/v1/posts/{postId}/votes`, `DELETE /api/v1/posts/{postId}/votes`, `POST /api/v1/posts/{postId}/bookmarks`, `DELETE /api/v1/posts/{postId}/bookmarks` | `PostComments`, `PostVotes`, `PostBookmarks`, `Posts`                         | `SCR-013 Post Detail`                                                                     | `TC-FR-013` |
+| `FR-014`    | `GET /api/v1/admin/jobs`, `PATCH /api/v1/admin/jobs/{jobId}/status`, `DELETE /api/v1/admin/jobs/{jobId}`                                                                                               | `Jobs`                                                                        | `SCR-016 Admin Job Moderation`                                                            | `TC-FR-014` |
+| `FR-015`    | `GET /api/v1/admin/dashboard`                                                                                                                                                                          | `AspNetUsers`, `Jobs`, `Posts`, `Applications`, `JobCategories`               | `SCR-017 Admin Dashboard`                                                                 | `TC-FR-015` |
+| `FR-016`    | Tích hợp trong API tạo/sửa `jobs` và `posts`                                                                                                                                                           | `Jobs`, `Posts`                                                               | `SCR-009 Job Form`, `SCR-014 Post Editor`                                                 | `TC-FR-016` |
+| `FR-017`    | `POST /api/v1/posts/{postId}/comments/{commentId}/reply`                                                                                                                                               | `PostComments`, `Posts`                                                       | `SCR-013 Post Detail`                                                                     | `TC-FR-017` |
+| `FR-018`    | `GET /api/v1/users/{userId}/profile`, `GET /api/v1/candidates/me/activity`                                                                                                                             | `CandidateProfiles`, `EmployerProfiles`, `Posts`, `Applications`, `SavedJobs` | `SCR-015 User Profile`                                                                    | `TC-FR-018` |
+| `FR-019`    | Tích hợp trong API tạo/sửa `jobs`, `posts`, `categories`, `tags`                                                                                                                                       | `Jobs`, `Posts`, `JobCategories`, `PostCategories`, `Tags`                    | `SCR-002 Job List`, `SCR-003 Job Detail`, `SCR-012 Community Feed`, `SCR-013 Post Detail` | `TC-FR-019` |
+| `FR-020`    | `POST /api/v1/uploads/avatar`, `POST /api/v1/uploads/logo`, `POST /api/v1/uploads/post-thumbnail`                                                                                                      | `CandidateProfiles`, `EmployerProfiles`, `Posts`                              | `SCR-006 Candidate Profile`, `SCR-007 Employer Profile`, `SCR-014 Post Editor`            | `TC-FR-020` |
+| `FR-021`    | `POST /api/v1/posts/{postId}/submit`, `PATCH /api/v1/admin/posts/{postId}/status`                                                                                                                      | `Posts`                                                                       | `SCR-014 Post Editor`, `SCR-018 Admin Post Moderation`                                    | `TC-FR-021` |
+| `FR-022`    | `GET /api/v1/admin/trash`, `PATCH /api/v1/admin/jobs/{jobId}/restore`, `PATCH /api/v1/admin/posts/{postId}/restore`                                                                                    | `Jobs`, `Posts`                                                               | `SCR-019 Admin Trash Restore`                                                             | `TC-FR-022` |
 
 ## 8. Changelog
-| Version | Ngày | Người cập nhật | Nội dung |
-|---|---|---|---|
-| 0.1 | YYYY-MM-DD |  | Khởi tạo khung |
-| 0.2 | 2026-05-13 | Codex | Hoàn thiện functional requirements bám theo scope và database description, bao phủ toàn bộ mục 5 và 6 |
+
+| Version | Ngày       | Người cập nhật / Tên Model | Nội dung                                                                                              |
+| ------- | ---------- | -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 0.1     | YYYY-MM-DD |                            | Khởi tạo khung                                                                                        |
+| 0.2     | 2026-05-13 | Codex                      | Hoàn thiện functional requirements bám theo scope và database description, bao phủ toàn bộ mục 5 và 6 |

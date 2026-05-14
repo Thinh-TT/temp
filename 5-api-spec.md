@@ -1,12 +1,15 @@
 # API Specification
 
 ## 1. Mục tiêu tài liệu
+
 - Chuẩn hóa contract API giữa backend, frontend và tester.
 - Đồng bộ với `2-functional-requirements.md` và `4-erd-and-db-rules.md`.
 - Bao phủ toàn bộ endpoint chính cho các use case `FR-001` đến `FR-022`.
 
 ## 2. Phạm vi API
+
 ### 2.1 API trong MVP (`Must`)
+
 - Authentication
 - Candidate profile
 - Employer profile
@@ -18,6 +21,7 @@
 - Admin dashboard
 
 ### 2.2 API sau MVP (`Should`)
+
 - Reply comment 1 cấp
 - User profile page
 - Upload avatar/logo/thumbnail
@@ -26,6 +30,7 @@
 - SEO slug routing hoàn chỉnh
 
 ## 3. Quy ước chung
+
 - Base URL đề xuất: `/api/v1`
 - Content type:
   - Request: `application/json`
@@ -36,16 +41,19 @@
 - API list bắt buộc có phân trang.
 
 ### 3.1 Header chuẩn
+
 ```http
 Authorization: Bearer <access_token>
 Content-Type: application/json
 ```
 
 ### 3.2 Quy ước pagination
+
 - Query params chung:
   - `page`: số trang, bắt đầu từ `1`
   - `pageSize`: số bản ghi trên trang
 - Response list chuẩn:
+
 ```json
 {
   "success": true,
@@ -61,6 +69,7 @@ Content-Type: application/json
 ```
 
 ### 3.3 Chuẩn phản hồi thành công
+
 ```json
 {
   "success": true,
@@ -70,6 +79,7 @@ Content-Type: application/json
 ```
 
 ### 3.4 Chuẩn phản hồi lỗi
+
 ```json
 {
   "success": false,
@@ -85,12 +95,15 @@ Content-Type: application/json
 ```
 
 ## 4. Kiểu dữ liệu dùng chung
+
 ### 4.1 `JobStatus`
+
 - `Pending`
 - `Approved`
 - `Hidden`
 
 ### 4.2 `ApplicationStatus`
+
 - `Pending`
 - `Reviewed`
 - `Interview`
@@ -98,26 +111,32 @@ Content-Type: application/json
 - `Accepted`
 
 ### 4.3 `PostStatus`
+
 - `Draft`
 - `Pending`
 - `Published`
 - `Hidden`
 
 ### 4.4 `EmploymentType`
+
 - `FullTime`
 - `PartTime`
 
 ### 4.5 `UserRole`
+
 - `Candidate`
 - `Employer`
 - `Admin`
 
 ## 5. Authentication API
+
 ### `POST /api/v1/auth/register`
+
 - Mô tả: Đăng ký tài khoản `Candidate` hoặc `Employer`.
 - Roles được phép gọi: `Guest`
 - Auth: Không yêu cầu
 - Request body:
+
 ```json
 {
   "userName": "john.dev",
@@ -127,7 +146,9 @@ Content-Type: application/json
   "role": "Candidate"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -138,23 +159,28 @@ Content-Type: application/json
   "message": "Register successful"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `409 USERNAME_ALREADY_EXISTS`
   - `409 EMAIL_ALREADY_EXISTS`
 
 ### `POST /api/v1/auth/login`
+
 - Mô tả: Đăng nhập bằng email hoặc username và mật khẩu.
 - Roles được phép gọi: `Guest`
 - Auth: Không yêu cầu
 - Request body:
+
 ```json
 {
   "login": "john@example.com",
   "password": "StrongPassword123!"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -170,20 +196,25 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 INVALID_CREDENTIALS`
   - `403 ACCOUNT_INACTIVE`
 
 ### `POST /api/v1/auth/logout`
+
 - Mô tả: Đăng xuất phiên hiện tại.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {}
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -191,16 +222,20 @@ Content-Type: application/json
   "message": "Logout successful"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
 
 ## 6. Candidate API
+
 ### `GET /api/v1/candidates/me`
+
 - Mô tả: Lấy hồ sơ candidate hiện tại.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
 - Query params: Không có
 - Success response:
+
 ```json
 {
   "success": true,
@@ -224,16 +259,19 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 PROFILE_NOT_FOUND`
 
 ### `PUT /api/v1/candidates/me`
+
 - Mô tả: Cập nhật hồ sơ candidate hiện tại.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "fullName": "Nguyen Van A",
@@ -247,7 +285,9 @@ Content-Type: application/json
   "skillIds": [1, 3, 5]
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -257,6 +297,7 @@ Content-Type: application/json
   "message": "Profile updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `400 INVALID_FILE_TYPE`
@@ -265,6 +306,7 @@ Content-Type: application/json
   - `404 SKILL_NOT_FOUND`
 
 ### `GET /api/v1/candidates/me/saved-jobs`
+
 - Mô tả: Lấy danh sách job đã lưu của candidate hiện tại.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
@@ -272,6 +314,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -294,11 +337,13 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
 
 ### `GET /api/v1/candidates/me/activity`
+
 - Mô tả: Lấy hoạt động của candidate hiện tại cho trang profile sau MVP.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
@@ -307,6 +352,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -330,16 +376,20 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
 
 ## 7. Employer API
+
 ### `GET /api/v1/employers/me`
+
 - Mô tả: Lấy hồ sơ employer hiện tại.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -355,16 +405,19 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 PROFILE_NOT_FOUND`
 
 ### `PUT /api/v1/employers/me`
+
 - Mô tả: Cập nhật hồ sơ employer hiện tại.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "companyName": "ABC Tech",
@@ -375,7 +428,9 @@ Content-Type: application/json
   "companySize": "51-200"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -385,6 +440,7 @@ Content-Type: application/json
   "message": "Employer profile updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `400 INVALID_FILE_TYPE`
@@ -392,6 +448,7 @@ Content-Type: application/json
   - `403 FORBIDDEN`
 
 ### `GET /api/v1/employer/jobs`
+
 - Mô tả: Lấy danh sách job do employer hiện tại sở hữu.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
@@ -400,6 +457,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -420,11 +478,13 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
 
 ### `GET /api/v1/employer/jobs/{jobId}/applications`
+
 - Mô tả: Lấy danh sách ứng viên của một job thuộc employer.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
@@ -433,6 +493,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -457,17 +518,21 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 JOB_NOT_FOUND`
 
 ## 8. Job API
+
 ### `POST /api/v1/jobs`
+
 - Mô tả: Tạo job mới.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "jobCategoryId": 2,
@@ -483,7 +548,9 @@ Content-Type: application/json
   "deadline": "2026-06-01T00:00:00Z"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -495,6 +562,7 @@ Content-Type: application/json
   "message": "Job created successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -502,10 +570,12 @@ Content-Type: application/json
   - `404 JOB_CATEGORY_NOT_FOUND`
 
 ### `PUT /api/v1/jobs/{jobId}`
+
 - Mô tả: Cập nhật job của employer sở hữu job đó.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "jobCategoryId": 2,
@@ -521,7 +591,9 @@ Content-Type: application/json
   "deadline": "2026-06-15T00:00:00Z"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -532,6 +604,7 @@ Content-Type: application/json
   "message": "Job updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -539,10 +612,12 @@ Content-Type: application/json
   - `404 JOB_NOT_FOUND`
 
 ### `DELETE /api/v1/jobs/{jobId}`
+
 - Mô tả: Xóa mềm hoặc ẩn job của employer sở hữu job đó.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -550,12 +625,14 @@ Content-Type: application/json
   "message": "Job deleted successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 JOB_NOT_FOUND`
 
 ### `GET /api/v1/jobs`
+
 - Mô tả: Lấy danh sách job công khai.
 - Roles được phép gọi: `Guest`, `Candidate`, `Employer`
 - Auth: Không bắt buộc
@@ -566,6 +643,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -593,14 +671,17 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
 
 ### `GET /api/v1/jobs/{slug}`
+
 - Mô tả: Lấy chi tiết một job công khai bằng slug.
 - Roles được phép gọi: `Guest`, `Candidate`, `Employer`
 - Auth: Không bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -632,14 +713,17 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `404 JOB_NOT_FOUND`
 
 ### `POST /api/v1/jobs/{jobId}/save`
+
 - Mô tả: Lưu job vào danh sách cá nhân.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -649,6 +733,7 @@ Content-Type: application/json
   "message": "Job saved successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
@@ -656,10 +741,12 @@ Content-Type: application/json
   - `409 JOB_ALREADY_SAVED`
 
 ### `DELETE /api/v1/jobs/{jobId}/save`
+
 - Mô tả: Bỏ lưu job khỏi danh sách cá nhân.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -667,24 +754,30 @@ Content-Type: application/json
   "message": "Saved job removed successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 SAVED_JOB_NOT_FOUND`
 
 ## 9. Application API
+
 ### `POST /api/v1/jobs/{jobId}/apply`
+
 - Mô tả: Candidate nộp đơn ứng tuyển cho một job.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "cvUrl": "/uploads/cv/candidate-12.pdf",
   "coverLetter": "I am interested in this role"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -696,6 +789,7 @@ Content-Type: application/json
   "message": "Application submitted successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -705,17 +799,21 @@ Content-Type: application/json
   - `422 JOB_EXPIRED`
 
 ### `PATCH /api/v1/applications/{applicationId}/status`
+
 - Mô tả: Employer cập nhật trạng thái application theo workflow hợp lệ.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "status": "Reviewed",
   "note": "Candidate profile matches requirements"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -727,6 +825,7 @@ Content-Type: application/json
   "message": "Application status updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -735,11 +834,14 @@ Content-Type: application/json
   - `409 INVALID_STATE_TRANSITION`
 
 ## 10. Community API
+
 ### `POST /api/v1/posts`
+
 - Mô tả: Tạo bài viết cộng đồng.
 - Roles được phép gọi: `Candidate`, `Employer`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "postCategoryId": 1,
@@ -750,7 +852,9 @@ Content-Type: application/json
   "tagIds": [1, 2]
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -762,6 +866,7 @@ Content-Type: application/json
   "message": "Post created successfully"
 }
 ```
+
 - Ghi chú:
   - Trong MVP có thể publish trực tiếp.
   - Sau MVP có thể khởi tạo `Draft` hoặc `Pending` tùy workflow moderation được bật.
@@ -773,10 +878,12 @@ Content-Type: application/json
   - `404 TAG_NOT_FOUND`
 
 ### `PUT /api/v1/posts/{postId}`
+
 - Mô tả: Cập nhật bài viết của chính tác giả.
 - Roles được phép gọi: `Candidate`, `Employer`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "postCategoryId": 1,
@@ -787,7 +894,9 @@ Content-Type: application/json
   "tagIds": [1, 3]
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -798,6 +907,7 @@ Content-Type: application/json
   "message": "Post updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -805,10 +915,12 @@ Content-Type: application/json
   - `404 POST_NOT_FOUND`
 
 ### `DELETE /api/v1/posts/{postId}`
+
 - Mô tả: Xóa mềm bài viết của tác giả.
 - Roles được phép gọi: `Candidate`, `Employer`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -816,12 +928,14 @@ Content-Type: application/json
   "message": "Post deleted successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 POST_NOT_FOUND`
 
 ### `GET /api/v1/posts`
+
 - Mô tả: Lấy feed cộng đồng.
 - Roles được phép gọi: `Guest`, `Candidate`, `Employer`
 - Auth: Không bắt buộc
@@ -832,6 +946,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -861,14 +976,17 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
 
 ### `GET /api/v1/posts/{slug}`
+
 - Mô tả: Lấy chi tiết bài viết công khai bằng slug.
 - Roles được phép gọi: `Guest`, `Candidate`, `Employer`
 - Auth: Không bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -904,20 +1022,25 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `404 POST_NOT_FOUND`
 
 ### `POST /api/v1/posts/{postId}/comments`
+
 - Mô tả: Tạo comment gốc cho bài viết.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "content": "Thanks for sharing"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -929,23 +1052,28 @@ Content-Type: application/json
   "message": "Comment created successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
   - `404 POST_NOT_FOUND`
 
 ### `POST /api/v1/posts/{postId}/comments/{commentId}/reply`
+
 - Mô tả: Reply trực tiếp vào comment gốc.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Phase: `Should`
 - Request body:
+
 ```json
 {
   "content": "I agree with you"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -958,6 +1086,7 @@ Content-Type: application/json
   "message": "Reply created successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -965,14 +1094,18 @@ Content-Type: application/json
   - `409 COMMENT_REPLY_DEPTH_EXCEEDED`
 
 ### `POST /api/v1/posts/{postId}/votes`
+
 - Mô tả: Upvote bài viết.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {}
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -982,16 +1115,19 @@ Content-Type: application/json
   "message": "Post upvoted successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `404 POST_NOT_FOUND`
   - `409 POST_ALREADY_UPVOTED`
 
 ### `DELETE /api/v1/posts/{postId}/votes`
+
 - Mô tả: Bỏ upvote bài viết.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1001,19 +1137,24 @@ Content-Type: application/json
   "message": "Post upvote removed successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `404 POST_VOTE_NOT_FOUND`
 
 ### `POST /api/v1/posts/{postId}/bookmarks`
+
 - Mô tả: Bookmark bài viết.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {}
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1023,16 +1164,19 @@ Content-Type: application/json
   "message": "Post bookmarked successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `404 POST_NOT_FOUND`
   - `409 POST_ALREADY_BOOKMARKED`
 
 ### `DELETE /api/v1/posts/{postId}/bookmarks`
+
 - Mô tả: Bỏ bookmark bài viết.
 - Roles được phép gọi: `Candidate`, `Employer`, `Admin`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1042,12 +1186,15 @@ Content-Type: application/json
   "message": "Post bookmark removed successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `404 POST_BOOKMARK_NOT_FOUND`
 
 ## 11. User Profile API
+
 ### `GET /api/v1/users/{userId}/profile`
+
 - Mô tả: Lấy trang profile công khai hoặc profile mở rộng tùy quyền.
 - Roles được phép gọi: `Guest`, `Candidate`, `Employer`
 - Auth: Không bắt buộc
@@ -1056,6 +1203,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1075,6 +1223,7 @@ Content-Type: application/json
   }
 }
 ```
+
 - Ghi chú:
   - Nếu người gọi là chính chủ candidate, backend có thể bổ sung `appliedJobs` và `savedJobs`.
   - Guest không được nhận `cvUrl` hoặc lịch sử apply riêng tư.
@@ -1082,7 +1231,9 @@ Content-Type: application/json
   - `404 USER_NOT_FOUND`
 
 ## 12. Upload API
+
 ### `POST /api/v1/uploads/avatar`
+
 - Mô tả: Upload avatar cho candidate.
 - Roles được phép gọi: `Candidate`
 - Auth: Bắt buộc
@@ -1091,6 +1242,7 @@ Content-Type: application/json
 - Form fields:
   - `file`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1100,6 +1252,7 @@ Content-Type: application/json
   "message": "Avatar uploaded successfully"
 }
 ```
+
 - Error codes:
   - `400 INVALID_FILE_TYPE`
   - `400 FILE_TOO_LARGE`
@@ -1107,6 +1260,7 @@ Content-Type: application/json
   - `403 FORBIDDEN`
 
 ### `POST /api/v1/uploads/logo`
+
 - Mô tả: Upload logo công ty cho employer.
 - Roles được phép gọi: `Employer`
 - Auth: Bắt buộc
@@ -1115,6 +1269,7 @@ Content-Type: application/json
 - Form fields:
   - `file`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1124,6 +1279,7 @@ Content-Type: application/json
   "message": "Logo uploaded successfully"
 }
 ```
+
 - Error codes:
   - `400 INVALID_FILE_TYPE`
   - `400 FILE_TOO_LARGE`
@@ -1131,6 +1287,7 @@ Content-Type: application/json
   - `403 FORBIDDEN`
 
 ### `POST /api/v1/uploads/post-thumbnail`
+
 - Mô tả: Upload thumbnail bài viết.
 - Roles được phép gọi: `Candidate`, `Employer`
 - Auth: Bắt buộc
@@ -1139,6 +1296,7 @@ Content-Type: application/json
 - Form fields:
   - `file`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1148,13 +1306,16 @@ Content-Type: application/json
   "message": "Thumbnail uploaded successfully"
 }
 ```
+
 - Error codes:
   - `400 INVALID_FILE_TYPE`
   - `400 FILE_TOO_LARGE`
   - `401 UNAUTHORIZED`
 
 ## 13. Admin API
+
 ### `GET /api/v1/admin/jobs`
+
 - Mô tả: Lấy danh sách job để kiểm duyệt.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
@@ -1163,6 +1324,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1183,21 +1345,26 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
 
 ### `PATCH /api/v1/admin/jobs/{jobId}/status`
+
 - Mô tả: Duyệt hoặc ẩn job.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
 - Request body:
+
 ```json
 {
   "status": "Approved"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1208,6 +1375,7 @@ Content-Type: application/json
   "message": "Job status updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -1216,10 +1384,12 @@ Content-Type: application/json
   - `409 INVALID_STATE_TRANSITION`
 
 ### `DELETE /api/v1/admin/jobs/{jobId}`
+
 - Mô tả: Admin xóa mềm job vi phạm.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1227,16 +1397,19 @@ Content-Type: application/json
   "message": "Job deleted successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
   - `404 JOB_NOT_FOUND`
 
 ### `GET /api/v1/admin/dashboard`
+
 - Mô tả: Lấy dữ liệu tổng quan dashboard quản trị.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1262,22 +1435,27 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
 
 ### `PATCH /api/v1/admin/posts/{postId}/status`
+
 - Mô tả: Duyệt hoặc ẩn bài viết theo moderation workflow.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
 - Phase: `Should`
 - Request body:
+
 ```json
 {
   "status": "Published"
 }
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1288,6 +1466,7 @@ Content-Type: application/json
   "message": "Post status updated successfully"
 }
 ```
+
 - Error codes:
   - `400 VALIDATION_ERROR`
   - `401 UNAUTHORIZED`
@@ -1296,6 +1475,7 @@ Content-Type: application/json
   - `409 INVALID_STATE_TRANSITION`
 
 ### `GET /api/v1/admin/trash`
+
 - Mô tả: Lấy danh sách dữ liệu đã xóa mềm để admin khôi phục.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
@@ -1305,6 +1485,7 @@ Content-Type: application/json
   - `page`
   - `pageSize`
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1324,20 +1505,25 @@ Content-Type: application/json
   }
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
 
 ### `PATCH /api/v1/admin/jobs/{jobId}/restore`
+
 - Mô tả: Khôi phục job đã xóa mềm.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
 - Phase: `Should`
 - Request body:
+
 ```json
 {}
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1349,6 +1535,7 @@ Content-Type: application/json
   "message": "Job restored successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
@@ -1356,15 +1543,19 @@ Content-Type: application/json
   - `409 JOB_NOT_DELETED`
 
 ### `PATCH /api/v1/admin/posts/{postId}/restore`
+
 - Mô tả: Khôi phục post đã xóa mềm.
 - Roles được phép gọi: `Admin`
 - Auth: Bắt buộc
 - Phase: `Should`
 - Request body:
+
 ```json
 {}
 ```
+
 - Success response:
+
 ```json
 {
   "success": true,
@@ -1376,6 +1567,7 @@ Content-Type: application/json
   "message": "Post restored successfully"
 }
 ```
+
 - Error codes:
   - `401 UNAUTHORIZED`
   - `403 FORBIDDEN`
@@ -1383,50 +1575,53 @@ Content-Type: application/json
   - `409 POST_NOT_DELETED`
 
 ## 14. SEO slug và route notes
+
 - Job detail public dùng: `GET /api/v1/jobs/{slug}`
 - Post detail public dùng: `GET /api/v1/posts/{slug}`
 - Ở giai đoạn MVP, nếu slug chưa bật hoàn toàn, backend có thể tạm dùng `jobId`/`postId` nội bộ nhưng frontend route công khai vẫn nên thiết kế theo slug.
 - Khi title đổi và slug đổi, backend nên trả slug mới trong response của endpoint update.
 
 ## 15. Error code catalog
-| Code | HTTP | Mô tả |
-|---|---|---|
-| `VALIDATION_ERROR` | `400` | Dữ liệu đầu vào không hợp lệ |
-| `INVALID_FILE_TYPE` | `400` | Loại file không hợp lệ |
-| `FILE_TOO_LARGE` | `400` | File vượt giới hạn kích thước |
-| `UNAUTHORIZED` | `401` | Thiếu hoặc sai token đăng nhập |
-| `INVALID_CREDENTIALS` | `401` | Sai thông tin đăng nhập |
-| `FORBIDDEN` | `403` | Không có quyền truy cập tài nguyên |
-| `ACCOUNT_INACTIVE` | `403` | Tài khoản bị vô hiệu hóa |
-| `NOT_FOUND` | `404` | Không tìm thấy tài nguyên |
-| `USER_NOT_FOUND` | `404` | Không tìm thấy user |
-| `PROFILE_NOT_FOUND` | `404` | Không tìm thấy hồ sơ |
-| `JOB_NOT_FOUND` | `404` | Không tìm thấy job |
-| `POST_NOT_FOUND` | `404` | Không tìm thấy post |
-| `COMMENT_NOT_FOUND` | `404` | Không tìm thấy comment |
-| `APPLICATION_NOT_FOUND` | `404` | Không tìm thấy application |
-| `SAVED_JOB_NOT_FOUND` | `404` | Không tìm thấy bản ghi save job |
-| `POST_VOTE_NOT_FOUND` | `404` | Không tìm thấy upvote |
-| `POST_BOOKMARK_NOT_FOUND` | `404` | Không tìm thấy bookmark |
-| `JOB_CATEGORY_NOT_FOUND` | `404` | Không tìm thấy category của job |
-| `POST_CATEGORY_NOT_FOUND` | `404` | Không tìm thấy category của post |
-| `TAG_NOT_FOUND` | `404` | Không tìm thấy tag |
-| `CONFLICT` | `409` | Xung đột dữ liệu |
-| `USERNAME_ALREADY_EXISTS` | `409` | Username đã tồn tại |
-| `EMAIL_ALREADY_EXISTS` | `409` | Email đã tồn tại |
-| `APPLICATION_ALREADY_EXISTS` | `409` | Candidate đã apply job này |
-| `JOB_ALREADY_SAVED` | `409` | Candidate đã lưu job này |
-| `POST_ALREADY_UPVOTED` | `409` | User đã upvote post |
-| `POST_ALREADY_BOOKMARKED` | `409` | User đã bookmark post |
-| `INVALID_STATE_TRANSITION` | `409` | Chuyển trạng thái không hợp lệ |
-| `COMMENT_REPLY_DEPTH_EXCEEDED` | `409` | Vượt quá số cấp reply cho phép |
-| `JOB_NOT_DELETED` | `409` | Job chưa ở trạng thái xóa mềm |
-| `POST_NOT_DELETED` | `409` | Post chưa ở trạng thái xóa mềm |
-| `JOB_EXPIRED` | `422` | Job đã quá hạn apply |
-| `INTERNAL_ERROR` | `500` | Lỗi hệ thống không mong muốn |
+
+| Code                           | HTTP  | Mô tả                              |
+| ------------------------------ | ----- | ---------------------------------- |
+| `VALIDATION_ERROR`             | `400` | Dữ liệu đầu vào không hợp lệ       |
+| `INVALID_FILE_TYPE`            | `400` | Loại file không hợp lệ             |
+| `FILE_TOO_LARGE`               | `400` | File vượt giới hạn kích thước      |
+| `UNAUTHORIZED`                 | `401` | Thiếu hoặc sai token đăng nhập     |
+| `INVALID_CREDENTIALS`          | `401` | Sai thông tin đăng nhập            |
+| `FORBIDDEN`                    | `403` | Không có quyền truy cập tài nguyên |
+| `ACCOUNT_INACTIVE`             | `403` | Tài khoản bị vô hiệu hóa           |
+| `NOT_FOUND`                    | `404` | Không tìm thấy tài nguyên          |
+| `USER_NOT_FOUND`               | `404` | Không tìm thấy user                |
+| `PROFILE_NOT_FOUND`            | `404` | Không tìm thấy hồ sơ               |
+| `JOB_NOT_FOUND`                | `404` | Không tìm thấy job                 |
+| `POST_NOT_FOUND`               | `404` | Không tìm thấy post                |
+| `COMMENT_NOT_FOUND`            | `404` | Không tìm thấy comment             |
+| `APPLICATION_NOT_FOUND`        | `404` | Không tìm thấy application         |
+| `SAVED_JOB_NOT_FOUND`          | `404` | Không tìm thấy bản ghi save job    |
+| `POST_VOTE_NOT_FOUND`          | `404` | Không tìm thấy upvote              |
+| `POST_BOOKMARK_NOT_FOUND`      | `404` | Không tìm thấy bookmark            |
+| `JOB_CATEGORY_NOT_FOUND`       | `404` | Không tìm thấy category của job    |
+| `POST_CATEGORY_NOT_FOUND`      | `404` | Không tìm thấy category của post   |
+| `TAG_NOT_FOUND`                | `404` | Không tìm thấy tag                 |
+| `CONFLICT`                     | `409` | Xung đột dữ liệu                   |
+| `USERNAME_ALREADY_EXISTS`      | `409` | Username đã tồn tại                |
+| `EMAIL_ALREADY_EXISTS`         | `409` | Email đã tồn tại                   |
+| `APPLICATION_ALREADY_EXISTS`   | `409` | Candidate đã apply job này         |
+| `JOB_ALREADY_SAVED`            | `409` | Candidate đã lưu job này           |
+| `POST_ALREADY_UPVOTED`         | `409` | User đã upvote post                |
+| `POST_ALREADY_BOOKMARKED`      | `409` | User đã bookmark post              |
+| `INVALID_STATE_TRANSITION`     | `409` | Chuyển trạng thái không hợp lệ     |
+| `COMMENT_REPLY_DEPTH_EXCEEDED` | `409` | Vượt quá số cấp reply cho phép     |
+| `JOB_NOT_DELETED`              | `409` | Job chưa ở trạng thái xóa mềm      |
+| `POST_NOT_DELETED`             | `409` | Post chưa ở trạng thái xóa mềm     |
+| `JOB_EXPIRED`                  | `422` | Job đã quá hạn apply               |
+| `INTERNAL_ERROR`               | `500` | Lỗi hệ thống không mong muốn       |
 
 ## 16. Changelog
-| Version | Ngày | Người cập nhật | Nội dung |
-|---|---|---|---|
-| 0.1 | YYYY-MM-DD |  | Khởi tạo khung |
-| 0.2 | 2026-05-13 | Codex | Đồng bộ API spec với functional requirements và ERD/DB rules, bổ sung đầy đủ endpoint, request/response, role và error code |
+
+| Version | Ngày       | Người cập nhật / Tên Model | Nội dung                                                                                                                    |
+| ------- | ---------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 0.1     | YYYY-MM-DD |                            | Khởi tạo khung                                                                                                              |
+| 0.2     | 2026-05-13 | Codex                      | Đồng bộ API spec với functional requirements và ERD/DB rules, bổ sung đầy đủ endpoint, request/response, role và error code |
